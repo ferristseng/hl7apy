@@ -1,3 +1,88 @@
+# NYGC Fork of https://github.com/crs4/hl7apy - for use in Bessemer
+
+Fork of https://github.com/crs4/hl7apy Addresses missing Withdrawn (WD) fields and segment fields which cause false positive errors during message parsing.
+
+For example, field PID_28 is missing:
+
+* https://github.com/crs4/hl7apy/blob/v1.3.4/hl7apy/v2_8_2/fields.py#L1676-L1677
+* https://github.com/crs4/hl7apy/blob/v1.3.4/hl7apy/v2_8_2/segments.py#L1980-L1981
+
+Will perhaps make a pull request on Github once all missing fields are encountered and addressed...
+
+$ git clone ssh://git@bitbucket.nygenome.org:7999/prod/hl7apy-forked.git ; cd hl7apy-forked
+# fork the repo
+$ git remote add sync https://github.com/crs4/hl7apy.git
+
+$ git remote -v
+origin	ssh://git@bitbucket.nygenome.org:7999/prod/hl7apy-forked.git (fetch)
+origin	ssh://git@bitbucket.nygenome.org:7999/prod/hl7apy-forked.git (push)
+sync	https://github.com/crs4/hl7apy.git (fetch)
+sync	https://github.com/crs4/hl7apy.git (push)
+
+$ git fetch --tags sync
+remote: Enumerating objects: 588, done.
+remote: Counting objects: 100% (42/42), done.
+remote: Compressing objects: 100% (13/13), done.
+remote: Total 588 (delta 28), reused 40 (delta 28), pack-reused 546
+Receiving objects: 100% (588/588), 1022.72 KiB | 5.47 MiB/s, done.
+Resolving deltas: 100% (380/380), completed with 11 local objects.
+From https://github.com/crs4/hl7apy
+ * [new branch]      develop     -> sync/develop
+ * [new branch]      gh-pages    -> sync/gh-pages
+ * [new branch]      ihic2015    -> sync/ihic2015
+ * [new branch]      master      -> sync/master
+ * [new tag]         v1.0.0      -> v1.0.0
+ * [new tag]         v1.0.0-rc.1 -> v1.0.0-rc.1
+ * [new tag]         v1.0.0-rc.2 -> v1.0.0-rc.2
+ * [new tag]         v1.0.1      -> v1.0.1
+ * [new tag]         v1.1.0      -> v1.1.0
+ * [new tag]         v1.1.1      -> v1.1.1
+ * [new tag]         v1.1.2      -> v1.1.2
+ * [new tag]         v1.2.0      -> v1.2.0
+ * [new tag]         v1.3.0      -> v1.3.0
+ * [new tag]         v1.3.1      -> v1.3.1
+ * [new tag]         v1.3.2      -> v1.3.2
+ * [new tag]         v1.3.3      -> v1.3.3
+ * [new tag]         v1.3.4      -> v1.3.4
+
+$ git push --tags origin
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+To ssh://bitbucket.nygenome.org:7999/prod/hl7apy-forked.git
+ * [new tag]         v1.0.0 -> v1.0.0
+ * [new tag]         v1.0.0-rc.1 -> v1.0.0-rc.1
+ * [new tag]         v1.0.0-rc.2 -> v1.0.0-rc.2
+ * [new tag]         v1.0.1 -> v1.0.1
+ * [new tag]         v1.1.0 -> v1.1.0
+ * [new tag]         v1.1.1 -> v1.1.1
+ * [new tag]         v1.1.2 -> v1.1.2
+ * [new tag]         v1.2.0 -> v1.2.0
+ * [new tag]         v1.3.0 -> v1.3.0
+ * [new tag]         v1.3.1 -> v1.3.1
+ * [new tag]         v1.3.2 -> v1.3.2
+ * [new tag]         v1.3.3 -> v1.3.3
+ * [new tag]         v1.3.4 -> v1.3.4
+
+# create master-nygc branch from v1.3.4 (this is only done once to establish the branch with the patched changes)
+# make the patch changes like missing PID_28, etc. to this 
+$ git checkout -b master-nygc v1.3.4
+$ git add --all
+$ git commit -m "patched missing PID, OBR fields in v2_8_2/fields.py and v2_8_2/segments.py"
+$ git push origin master-nygc
+
+# create new branch to test changes on the new version
+$ git checkout -b feature/v1.3.4-nygc v1.3.4
+# merge in our patch into the new versioned feature branch
+$ git merge --no-ff master-nygc
+# TEST the feature branch!  If all goes well merge feature/v1.3.4-nygc back into master-nygc
+$ git push origin feature/v1.3.4-nygc
+$ git checkout master-nygc
+$ git merge --no-ff feature/v1.3.4-nygc
+$ git push origin master-nygc
+$ git tag v1.3.4-nygc
+$ git push origin v1.3.4-nygc
+
+---
+
 HL7apy is a lightweight Python package to intuitively handle [HL7](http://www.hl7.org) v2 messages according to HL7 specifications.
 
 The main features includes:
